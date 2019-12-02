@@ -20,39 +20,45 @@ router.get('/home', async(req, res) => {
         res.send(snapshot.docs);
     }
 });
-router.get('/all',(req,res)=>{
-    // output = db.collection('users').get().then((doc)=>{
-    //     doc.forEach((docs)=>{
-    //         res.send(docs.data());
-    //     });
-    // }).catch((err)=>{
-    //     console.log(err);
-    // });
-    var userRef = db.collection("users")
-    var allUsers = userRef.get()
+router.get('/all',async(req,res)=>{
+ try{
+    let data=[];
+    await db
+    .collection("users")
+    .get()
     .then(snapshot=> {
-        snapshot.forEach((doc) => {
-            res.json(doc.data());
+        snapshot.docs.forEach((doc) => {
+            data.push(doc.data());
         });
     })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
-    });
+    res.send(data);
+}   
+    catch(err) {
+        console.log("Error getting documents: ", err);
+    }
     
 })
         
 
-router.post('/save', (req, res)=>{
+router.post('/save', async(req, res)=>{
     var username = req.body.username;
     var email = req.body.email;
     let data={
         name: username,
-        email:email
-        
+        email:email 
     }
-    let setDoc  = db.collection('users').doc('id2').set(data);
-    return setDoc.then(res=>{
-        console.log('set:', res);
+    try{
+    await db
+    .collection('users')
+    .doc('id2')
+    .set(data)
+    .then(doc=>{
+        res.json({message:'document ${doc.id} created successfully'});
+    // eslint-disable-next-line handle-callback-err
     })
-})
+}
+catch(err){
+        console.log(err);
+    }
+});
 module.exports = router;
