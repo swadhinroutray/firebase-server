@@ -1,7 +1,13 @@
 # HotWeb
 Hotweb website
 
-clone this repo and make sure u kave firebase and node installed
+clone this repo and make sure u have firebase and node installed
+if you dont have firebase installed
+```
+
+npm install -g firebase-tools
+```
+after cloning the repo
 ```
 cd hotweb
 cd functions
@@ -19,4 +25,5 @@ once downloaded copy the content to serviceAccountKey.json
 ```
 firebase serve
 ```
-this shoud start ur server and client 
+this should start ur server and client 
+#public is for front endend and functions is for backend
