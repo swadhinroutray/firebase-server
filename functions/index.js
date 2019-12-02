@@ -12,22 +12,12 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://hotweb-43048.firebaseio.com'
 });
-
+const userRoutes = require('./routes/users')
 const app = express();
+const db = admin.firestore()
 app.use(express.json());
-app.get('/home', async(req, res) => {
-    try {
-        await admin
-            .firestore()
-            .collection('users')
-            .get()
-            .then(snapshot => {
-                res.send(snapshot.docs);
-            });
-    } catch (err) {
-        console.log(err);
-    }
-});
+app.use('/api/users', userRoutes)
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
