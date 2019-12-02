@@ -26,4 +26,4 @@ once downloaded copy the content to serviceAccountKey.json
 firebase serve
 ```
 this should start ur server and client 
-#public is for front endend and functions is for backend
+# public is for frontend and functions is for backend
