@@ -8,11 +8,24 @@ router.get('/home', async(req, res) => {
         await db
             .collection('users')
             .get()
-            .then(snapshot => {
-                res.send(snapshot.docs);
+            .then(snapshot =>{
+                
+               return res.send(snapshot.docs);
             });
     } catch (err) {
         console.log(err);
+    }snapshot =>{
+        res.send(snapshot.docs);
     }
 });
+// router.get('/:id',(req,res)=>{
+//     var userID = req.params.id;
+//     var client  = db.collection('users').get(userID);
+//     if(client){
+//         res.json(client);
+//     }
+//     else{
+//         res.send('Error getting Doc:', client);
+//     }
+// })
 module.exports = router;

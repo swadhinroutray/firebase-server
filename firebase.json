@@ -13,8 +13,9 @@
         "public": "public",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
         "rewrites": [{
-            "source": "/api/users/home",
+            "source": ["/api/users/home","/api/users/:id"],
             "function": "app"
+            
         }]
     }
 }
