@@ -1,3 +1,4 @@
+/* eslint-disable promise/catch-or-return */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable promise/always-return */
 const admin = require('firebase-admin'),
@@ -21,22 +22,48 @@ router.get('/home', async(req, res) => {
     }
 });
 router.get('/all',async(req,res)=>{
- try{
     let data=[];
-    await db
-    .collection("users")
-    .get()
-    .then(snapshot=> {
+    try{
+
+        if(req.query.id){
+        var userID = req.query.id;
+        try{
+            db
+            .collection('users')
+            .doc(userID)
+            .get()
+            .then(doc=>{
+                res.send(doc.data());
+            })
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    else{
+  
+      try{
+
+        await db
+        .collection("users")
+        .get()
+        .then(snapshot=> {
         snapshot.docs.forEach((doc) => {
             data.push(doc.data());
         });
     })
     res.send(data);
-}   
+    }  
+    
     catch(err) {
         console.log("Error getting documents: ", err);
+        }
     }
-    
+    }
+    catch(err){
+        console.log(err);
+    }
 })
         
 
@@ -58,30 +85,17 @@ router.post('/save', async(req, res)=>{
         console.log(err);
     }
 });
-router.get('/:id',async(req,res)=>{
-        var userID = req.params.id;
-      try{
-        await db
-        .collection('users')
-        .doc(userID)
-        .get()
-        .then(doc=>{
-            res.send(doc.data());
-        })
-    }
-    catch(err){
-        console.log(err);
-    }
-})
-router.delete('/remove/:id',async(req,res)=>{
-    var userID = req.params('id');
+
+router.delete('/remove',async(req,res)=>{
+    
     try{
+        var userID = req.query.id;
         await db
         .collection('users')
         .doc(userID)
         .delete()
         .then(doc=>{
-            res.json("Deleted with id:",doc.id);
+            res.send('Document Deleted!');
         })
     }
     catch(err){
