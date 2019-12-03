@@ -43,22 +43,49 @@ router.get('/all',async(req,res)=>{
 router.post('/save', async(req, res)=>{
     var username = req.body.username;
     var email = req.body.email;
-    let data={
-        name: username,
-        email:email 
-    }
     try{
     await db
     .collection('users')
-    .doc('id2')
-    .set(data)
+    .add({
+        name: username,
+        email:email 
+    })
     .then(doc=>{
-        res.json({message:'document ${doc.id} created successfully'});
-    // eslint-disable-next-line handle-callback-err
+       return console.log("Created:",doc.id);    // eslint-disable-next-line handle-callback-err
     })
 }
-catch(err){
+    catch(err){
         console.log(err);
     }
 });
+router.get('/:id',async(req,res)=>{
+        var userID = req.params.id;
+      try{
+        await db
+        .collection('users')
+        .doc(userID)
+        .get()
+        .then(doc=>{
+            res.send(doc.data());
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+router.delete('/remove/:id',async(req,res)=>{
+    var userID = req.params('id');
+    try{
+        await db
+        .collection('users')
+        .doc(userID)
+        .delete()
+        .then(doc=>{
+            res.json("Deleted with id:",doc.id);
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
+})
 module.exports = router;

@@ -24,6 +24,14 @@
         {
             "source": "/api/users/save",
             "function": "app"
+        },
+        {
+            "source": "/api/users/:id",
+            "function": "app"
+        },
+        {
+            "source": "/api/users/remove/:id",
+            "function": "app"
         }
     ]
     }

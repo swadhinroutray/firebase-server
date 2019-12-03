@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const express = require('express');
 var path = require('path');
 var site_root = path.resolve(__dirname + '/..');
-
+var bodyParser = require('body-parser');
 var admin = require('firebase-admin');
 
 var serviceAccount = require(site_root + '/serviceAccountKey.json');
@@ -15,6 +15,8 @@ admin.initializeApp({
 const userRoutes = require('./routes/users')
 const app = express();
 const db = admin.firestore()
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/api/users', userRoutes)
 
