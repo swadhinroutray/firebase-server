@@ -17,7 +17,7 @@
                 "function": "app"
             },
             {
-                "source": "/api/forms/**",
+                "source": "/api/forum/**",
                 "function": "app"
             }
         ]
