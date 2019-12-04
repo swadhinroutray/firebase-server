@@ -12,13 +12,15 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://hotweb-43048.firebaseio.com'
 });
-const userRoutes = require('./routes/users')
+const userRoutes = require('./routes/users');
+const forumRoutes = require('./routes/forum');
 const app = express();
-const db = admin.firestore()
+const db = admin.firestore();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/api/users', userRoutes)
+app.use('/api/users', userRoutes);
+app.use('/api/forum', forumRoutes);
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
