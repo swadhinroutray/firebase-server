@@ -115,16 +115,15 @@ router.put('/addcomment', async(req, res) => {
     try {
         var postID = req.query.postID;
 
-        var newcomments;
         await db
             .collection('forum')
             .doc(postID)
             .get()
-            .then(doc => {
+            .then(async doc => {
                 data = doc.data();
-                newcomments = data.comments;
 
-                db.collection('forum')
+                await db
+                    .collection('forum')
                     .doc(postID)
                     .update({
                         comments: admin.firestore.FieldValue.arrayUnion({
