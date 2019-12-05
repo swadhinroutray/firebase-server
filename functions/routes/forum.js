@@ -66,7 +66,7 @@ router.delete('/remove', async(req, res) => {
         console.log(err);
     }
 });
-router.delete('/removeComment', async(req, res) => {
+router.put('/removeComment', async(req, res) => {
     try {
         var commentID = req.query.commentid;
         var postID = req.query.postid;
