@@ -42,6 +42,43 @@ router.get('/all', async(req, res) => {
     }
 });
 
+router.get('/allAdmin', async(req, res) => {
+    let data = [];
+    try {
+        if (req.query.id) {
+            var forumID = req.query.id;
+            try {
+                db.collection('forum')
+                    .doc(forumID)
+                    .get()
+                    .then(doc => {
+                        res.send(doc.data());
+                    });
+            } catch (err) {
+                console.log(err);
+            }
+        } else {
+            try {
+                await db
+                    .collection('forum')
+                    .get()
+                    .then(snapshot => {
+                        snapshot.docs.forEach(doc => {
+                            if (doc.data().isAdminArticle == true) {
+                                data.push(doc.data());
+                            }
+                        });
+                    });
+                res.send(data);
+            } catch (err) {
+                console.log('Error getting documents: ', err);
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 router.delete('/remove', async(req, res) => {
     try {
         var forumID = req.query.id;
@@ -90,6 +127,7 @@ router.post('/newArticle', async(req, res) => {
         author: req.body.author,
         content: req.body.content,
         hashtags: req.body.hashtags,
+        isAdminArticle: req.body.isAdminArticle === 'true' ? true : false,
         visible: true,
         comments: []
     };
