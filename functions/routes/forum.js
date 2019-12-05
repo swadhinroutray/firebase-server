@@ -68,7 +68,13 @@ router.put('/removeComment', async(req, res) => {
             .then(doc => {
                 data = doc.data();
                 newComments = data.comments.filter(
+<<<<<<< HEAD
                     comment => comment.commentId !== commentID
+=======
+
+                    comment => comment.commentId !== commentID
+
+>>>>>>> d2faffe2ecce2f4ede70bb51787a711be9b061f9
                 );
             });
         await db
