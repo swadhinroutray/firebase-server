@@ -41,20 +41,7 @@ router.get('/all', async(req, res) => {
     }
 });
 
-// router.delete('/remove', async(req, res) => {
-//     try {
-//         var forumID = req.query.id;
-//         await db
-//             .collection('forum')
-//             .doc(forumID)
-//             .delete()
-//             .then(doc => {
-//                 res.send('Document Deleted!');
-//             });
-//     } catch (err) {
-//         console.log(err);
-//     }
-// });
+
 router.delete('/remove', async(req, res) => {
     try {
         var forumID = req.query.id;
@@ -81,8 +68,7 @@ router.put('/removeComment', async(req, res) => {
             .then(doc => {
                 data = doc.data();
                 newComments = data.comments.filter(
-
-                    comment => comment.commentId !== commentID
+                   comment => comment.commentId !== commentID
 
                 );
             });
@@ -99,11 +85,11 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
-
 router.post('/newArticle', async(req,res) => {
     var article = {
         articlename : req.body.articlename,
         author:req.body.author,
+        content:req.body.content,
         hashtags:req.body.hashtags,
         visible:true,
         comments:[]
