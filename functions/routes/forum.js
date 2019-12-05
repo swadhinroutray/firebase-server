@@ -115,12 +115,6 @@ router.put('/addcomment', async(req, res) => {
     try {
         var postID = req.query.postID;
 
-        var comment = {
-            comment: req.body.comment,
-            commentid: uuidv4(),
-            createdAt: Date.now().toString()
-        };
-
         var newcomments;
         await db
             .collection('forum')
@@ -129,11 +123,15 @@ router.put('/addcomment', async(req, res) => {
             .then(doc => {
                 data = doc.data();
                 newcomments = data.comments;
-                newcomments.push(comment);
+
                 db.collection('forum')
                     .doc(postID)
                     .update({
-                        comments: newcomments
+                        comments: admin.firestore.FieldValue.arrayUnion({
+                            comment: req.body.comment,
+                            commentid: uuidv4(),
+                            createdAt: doc.readTime
+                        })
                     })
                     .then(() => {
                         res.send('comment added');
