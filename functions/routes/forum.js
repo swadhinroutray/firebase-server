@@ -81,11 +81,9 @@ router.put('/removeComment', async(req, res) => {
             .then(doc => {
                 data = doc.data();
                 newComments = data.comments.filter(
-<<<<<<< HEAD
+
                     comment => comment.commentId !== commentID
-=======
-                    comment => comment.commentid != commentID
->>>>>>> 52476cae75046084b8e841e92f94aa94dfbf69fc
+
                 );
             });
         await db
@@ -101,7 +99,7 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
-<<<<<<< HEAD
+
 router.post('/newArticle', async(req,res) => {
     var article = {
         articlename : req.body.articlename,
@@ -157,6 +155,3 @@ try {
 }
 })
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> 52476cae75046084b8e841e92f94aa94dfbf69fc
