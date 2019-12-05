@@ -2,6 +2,7 @@
 /* eslint-disable promise/always-return */
 /* eslint-disable promise/catch-or-return */
 const admin = require('firebase-admin'),
+    firebase = require('firebase'),
     express = require('express'),
     router = express.Router(),
     db = admin.firestore();
@@ -41,6 +42,42 @@ router.get('/all', async(req, res) => {
     }
 });
 
+router.get('/allAdmin', async(req, res) => {
+    let data = [];
+    try {
+        if (req.query.id) {
+            var forumID = req.query.id;
+            try {
+                db.collection('forum')
+                    .doc(forumID)
+                    .get()
+                    .then(doc => {
+                        res.send(doc.data());
+                    });
+            } catch (err) {
+                console.log(err);
+            }
+        } else {
+            try {
+                await db
+                    .collection('forum')
+                    .get()
+                    .then(snapshot => {
+                        snapshot.docs.forEach(doc => {
+                            if (doc.data().isAdminArticle == true) {
+                                data.push(doc.data());
+                            }
+                        });
+                    });
+                res.send(data);
+            } catch (err) {
+                console.log('Error getting documents: ', err);
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 router.delete('/remove', async(req, res) => {
     try {
@@ -84,6 +121,7 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
+<<<<<<< HEAD
 router.post('/newarticle', async(req,res) => {
     var article = {
         articlename : req.body.articlename,
@@ -93,26 +131,41 @@ router.post('/newarticle', async(req,res) => {
         visible:true,
         comments:[]
     }
+=======
+router.post('/newArticle', async(req, res) => {
+    var article = {
+        articlename: req.body.articlename,
+        author: req.body.author,
+        content: req.body.content,
+        hashtags: req.body.hashtags,
+        isAdminArticle: req.body.isAdminArticle === 'true' ? true : false,
+        visible: true,
+        comments: []
+    };
+>>>>>>> 6919aec25ebcbed4059609e21bc30bf2c462458f
     try {
         await db
             .collection('forum')
             .add(article)
-            .then(snapshot =>{
-                db.collection('forum').doc(snapshot.id)
-                .update({
-                    timestamp:admin.firestore.FieldValue.serverTimestamp()
-                })
-                console.log("added with id:", snapshot.id)
-               
-                return res.send("Added new Article!");
-            })
-            
+            .then(snapshot => {
+                db.collection('forum')
+                    .doc(snapshot.id)
+                    .update({
+                        timestamp: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                console.log('added with id:', snapshot.id);
+
+                return res.send('Added new Article!');
+            });
     } catch (err) {
         console.log(err);
     }
-})
-router.put('/addcomment',async(req,res)=>{
+});
+router.put('/addcomment', async(req, res) => {
+    try {
+        var postID = req.query.postID;
 
+<<<<<<< HEAD
 try {
     var postID =req.query.postID;
     var comment ={
@@ -180,3 +233,31 @@ router.put('/unbanarticle', async(req,res)=>{
     }  
 })
 module.exports = router;
+=======
+        await db
+            .collection('forum')
+            .doc(postID)
+            .get()
+            .then(async doc => {
+                data = doc.data();
+
+                await db
+                    .collection('forum')
+                    .doc(postID)
+                    .update({
+                        comments: admin.firestore.FieldValue.arrayUnion({
+                            comment: req.body.comment,
+                            commentid: uuidv4(),
+                            createdAt: doc.readTime
+                        })
+                    })
+                    .then(() => {
+                        res.send('comment added');
+                    });
+            });
+    } catch (err) {
+        console.log(err);
+    }
+});
+module.exports = router;
+>>>>>>> 6919aec25ebcbed4059609e21bc30bf2c462458f
