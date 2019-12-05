@@ -68,13 +68,7 @@ router.put('/removeComment', async(req, res) => {
             .then(doc => {
                 data = doc.data();
                 newComments = data.comments.filter(
-<<<<<<< HEAD
                     comment => comment.commentId !== commentID
-=======
-
-                    comment => comment.commentId !== commentID
-
->>>>>>> d2faffe2ecce2f4ede70bb51787a711be9b061f9
                 );
             });
         await db
@@ -90,10 +84,11 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
-router.post('/newArticle', async(req,res) => {
+router.post('/newarticle', async(req,res) => {
     var article = {
         articlename : req.body.articlename,
         author:req.body.author,
+        content:req.body.content,
         hashtags:req.body.hashtags,
         visible:true,
         comments:[]
@@ -122,7 +117,8 @@ try {
     var postID =req.query.postID;
     var comment ={
         comment:req.body.comment,
-        commentid: uuidv4()
+        commentid: uuidv4(),
+       
     };
     var newcomments;
     await db
@@ -136,12 +132,51 @@ try {
             db.collection('forum').doc(postID).update({
                 comments: newcomments,
                 timestamp:admin.firestore.FieldValue.serverTimestamp()
+                
             }).then( ()=>{
-                res.send("Comment added");
+                res.send("Comment added with id");
             })
         })
 } catch (err) {
     console.log(err);
 }
+})
+router.put('/banarticle', async(req,res)=>{
+    var articleID = req.query.id;
+    try {
+        await db
+            .collection('forum')
+            .doc(articleID)
+            .update({
+                visible:false,
+                timestamp:admin.firestore.FieldValue.serverTimestamp()
+            })
+            .then(snapshot =>{
+                console.log("Article Banned");
+                return res.send("Banned Article!");
+            })
+            
+    } catch (err) {
+        console.log(err);
+    }  
+})
+router.put('/unbanarticle', async(req,res)=>{
+    var articleID = req.query.id;
+    try {
+        await db
+            .collection('forum')
+            .doc(articleID)
+            .update({
+                visible:true,
+                timestamp:admin.firestore.FieldValue.serverTimestamp()
+            })
+            .then(snapshot =>{
+                console.log("Unbanned Article ");
+                return res.send("Unbanned Article");
+            })
+            
+    } catch (err) {
+        console.log(err);
+    }  
 })
 module.exports = router;
