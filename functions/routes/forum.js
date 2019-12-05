@@ -64,7 +64,7 @@ router.get('/allAdmin', async(req, res) => {
                     .get()
                     .then(snapshot => {
                         snapshot.docs.forEach(doc => {
-                            if (doc.data().isAdminArticle == true) {
+                            if (doc.data().isAdminArticle === true) {
                                 data.push(doc.data());
                             }
                         });
@@ -121,16 +121,15 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
-router.post('/newArticle', async(req, res) => {
+router.post('/newarticle', async(req,res) => {
     var article = {
-        articlename: req.body.articlename,
-        author: req.body.author,
-        content: req.body.content,
-        hashtags: req.body.hashtags,
-        isAdminArticle: req.body.isAdminArticle === 'true' ? true : false,
-        visible: true,
-        comments: []
-    };
+        articlename : req.body.articlename,
+        author:req.body.author,
+        content:req.body.content,
+        hashtags:req.body.hashtags,
+        visible:true,
+        comments:[]
+    }
     try {
         await db
             .collection('forum')
@@ -150,32 +149,74 @@ router.post('/newArticle', async(req, res) => {
     }
 });
 router.put('/addcomment', async(req, res) => {
-    try {
-        var postID = req.query.postID;
+try {
+    var postID =req.query.postID;
+    var comment ={
+        comment:req.body.comment,
+        commentid: uuidv4(),
+       
+    };
+    var newcomments;
+    await db
+        .collection('forum')
+        .doc(postID)
+        .get()
+        .then(doc =>{
+            data = doc.data();
+            newcomments = data.comments;
+            newcomments.push(comment);
+            db.collection('forum').doc(postID).update({
+                comments: newcomments,
+                timestamp:admin.firestore.FieldValue.serverTimestamp()
+                
+            }).then( ()=>{
+                res.send("Comment added with id");
+            })
+        })
+} catch (err) {
+    console.log(err);
+}
+})
 
+
+
+router.put('/banarticle', async(req,res)=>{
+    var articleID = req.query.id;
+    try {
         await db
             .collection('forum')
-            .doc(postID)
-            .get()
-            .then(async doc => {
-                data = doc.data();
-
-                await db
-                    .collection('forum')
-                    .doc(postID)
-                    .update({
-                        comments: admin.firestore.FieldValue.arrayUnion({
-                            comment: req.body.comment,
-                            commentid: uuidv4(),
-                            createdAt: doc.readTime
-                        })
-                    })
-                    .then(() => {
-                        res.send('comment added');
-                    });
-            });
+            .doc(articleID)
+            .update({
+                visible:false,
+                timestamp:admin.firestore.FieldValue.serverTimestamp()
+            })
+            .then(snapshot =>{
+                console.log("Article Banned");
+                return res.send("Banned Article!");
+            })
+            
     } catch (err) {
         console.log(err);
-    }
-});
+    }  
+})
+
+router.put('/unbanarticle', async(req,res)=>{
+    var articleID = req.query.id;
+    try {
+        await db
+            .collection('forum')
+            .doc(articleID)
+            .update({
+                visible:true,
+                timestamp:admin.firestore.FieldValue.serverTimestamp()
+            })
+            .then(snapshot =>{
+                console.log("Unbanned Article ");
+                return res.send("Unbanned Article");
+            })
+            
+    } catch (err) {
+        console.log(err);
+    }  
+})
 module.exports = router;

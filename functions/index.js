@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const express = require('express');
 const firebase = require('firebase');
 var path = require('path');
-var site_root = path.resolve(__dirname + '/..');
+var site_root = path.join(__dirname , '/..');
 var bodyParser = require('body-parser');
 var admin = require('firebase-admin');
 
