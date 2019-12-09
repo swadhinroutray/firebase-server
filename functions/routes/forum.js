@@ -7,6 +7,15 @@ const admin = require('firebase-admin'),
     router = express.Router(),
     db = admin.firestore();
 var uuidv4 = require('uuid/v4');
+
+function isLoggedIn(req, res, next) {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        next();
+    } else {
+        res.send('notLoggedIn');
+    }
+}
 router.get('/all', async(req, res) => {
     let data = [];
     try {
@@ -79,7 +88,7 @@ router.get('/allAdmin', async(req, res) => {
     }
 });
 
-router.delete('/remove', async(req, res) => {
+router.delete('/remove', isLoggedIn, async(req, res) => {
     try {
         var forumID = req.query.id;
         await db
@@ -93,7 +102,7 @@ router.delete('/remove', async(req, res) => {
         console.log(err);
     }
 });
-router.put('/removeComment', async(req, res) => {
+router.put('/removeComment', isLoggedIn, async(req, res) => {
     try {
         var commentID = req.query.commentid;
         var postID = req.query.postid;
@@ -121,14 +130,14 @@ router.put('/removeComment', async(req, res) => {
         console.log(err);
     }
 });
-router.post('/newarticle', async(req,res) => {
+router.post('/newarticle', isLoggedIn, async(req, res) => {
     var article = {
-        articlename : req.body.articlename,
-        author:req.body.author,
-        content:req.body.content,
-        hashtags:req.body.hashtags,
-        visible:true,
-        comments:[]
+        articlename: req.body.articlename,
+        author: req.body.author,
+        content: req.body.content,
+        hashtags: req.body.hashtags,
+        visible: true,
+        comments: []
     }
     try {
         await db
@@ -148,75 +157,75 @@ router.post('/newarticle', async(req,res) => {
         console.log(err);
     }
 });
-router.put('/addcomment', async(req, res) => {
-try {
-    var postID =req.query.postID;
-    var comment ={
-        comment:req.body.comment,
-        commentid: uuidv4(),
-       
-    };
-    var newcomments;
-    await db
-        .collection('forum')
-        .doc(postID)
-        .get()
-        .then(doc =>{
-            data = doc.data();
-            newcomments = data.comments;
-            newcomments.push(comment);
-            db.collection('forum').doc(postID).update({
-                comments: newcomments,
-                timestamp:admin.firestore.FieldValue.serverTimestamp()
-                
-            }).then( ()=>{
-                res.send("Comment added with id");
+router.put('/addcomment', isLoggedIn, async(req, res) => {
+    try {
+        var postID = req.query.postID;
+        var comment = {
+            comment: req.body.comment,
+            commentid: uuidv4(),
+
+        };
+        var newcomments;
+        await db
+            .collection('forum')
+            .doc(postID)
+            .get()
+            .then(doc => {
+                data = doc.data();
+                newcomments = data.comments;
+                newcomments.push(comment);
+                db.collection('forum').doc(postID).update({
+                    comments: newcomments,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp()
+
+                }).then(() => {
+                    res.send("Comment added with id");
+                })
             })
-        })
-} catch (err) {
-    console.log(err);
-}
+    } catch (err) {
+        console.log(err);
+    }
 })
 
 
 
-router.put('/banarticle', async(req,res)=>{
+router.put('/banarticle', isLoggedIn, async(req, res) => {
     var articleID = req.query.id;
     try {
         await db
             .collection('forum')
             .doc(articleID)
             .update({
-                visible:false,
-                timestamp:admin.firestore.FieldValue.serverTimestamp()
+                visible: false,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
             })
-            .then(snapshot =>{
+            .then(snapshot => {
                 console.log("Article Banned");
                 return res.send("Banned Article!");
             })
-            
+
     } catch (err) {
         console.log(err);
-    }  
+    }
 })
 
-router.put('/unbanarticle', async(req,res)=>{
+router.put('/unbanarticle', isLoggedIn, async(req, res) => {
     var articleID = req.query.id;
     try {
         await db
             .collection('forum')
             .doc(articleID)
             .update({
-                visible:true,
-                timestamp:admin.firestore.FieldValue.serverTimestamp()
+                visible: true,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
             })
-            .then(snapshot =>{
+            .then(snapshot => {
                 console.log("Unbanned Article ");
                 return res.send("Unbanned Article");
             })
-            
+
     } catch (err) {
         console.log(err);
-    }  
+    }
 })
 module.exports = router;

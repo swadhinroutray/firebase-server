@@ -6,6 +6,14 @@ const admin = require('firebase-admin'),
     firebase = require('firebase');
 (router = express.Router()), (db = admin.firestore());
 
+function isLoggedIn(req, res, next) {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        next();
+    } else {
+        res.send('notLoggedIn');
+    }
+}
 router.get('/home', async(req, res) => {
     try {
         await db
@@ -21,7 +29,7 @@ router.get('/home', async(req, res) => {
         res.send(snapshot.docs);
     };
 });
-router.get('/all', async(req, res) => {
+router.get('/all', isLoggedIn, async(req, res) => {
     let data = [];
     try {
         if (req.query.id) {
@@ -58,11 +66,26 @@ router.get('/all', async(req, res) => {
 
 router.post('/register', async(req, res) => {
     try {
+        const email = req.body.email;
+        const password = req.body.password;
+        const username = req.body.username
         await firebase
             .auth()
-            .createUserWithEmailAndPassword(req.body.email, req.body.password)
-            .then(() => {
-                res.send('createduser');
+            .createUserWithEmailAndPassword(email, password)
+            .then(async() => {
+                try {
+                    await db
+                        .collection('users')
+                        .add({
+                            name: username,
+                            email: email
+                        })
+                        .then(doc => {
+                            return console.log('Created:', doc.id); // eslint-disable-next-line handle-callback-err
+                        });
+                } catch (err) {
+                    console.log(err);
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -73,27 +96,21 @@ router.post('/register', async(req, res) => {
     }
 });
 
+
 router.post('/login', async(req, res) => {
     try {
         await firebase
             .auth()
             .signInWithEmailAndPassword(req.body.email, req.body.password)
             .then(user => {
-                res.send('createduser');
+                res.send('login success');
             });
     } catch (err) {
         res.send('wrond credentials');
     }
 });
 
-function isLoggedIn(req, res, next) {
-    const user = firebase.auth().currentUser;
-    if (user) {
-        next();
-    } else {
-        res.send('notLoggedIn');
-    }
-}
+
 
 router.post('/logout', async(req, res) => {
     try {
@@ -107,25 +124,40 @@ router.post('/logout', async(req, res) => {
         res.send('failed to logout');
     }
 });
-router.post('/save', async(req, res) => {
-    var username = req.body.username;
-    var email = req.body.email;
-    try {
-        await db
-            .collection('users')
-            .add({
-                name: username,
-                email: email
-            })
-            .then(doc => {
-                return console.log('Created:', doc.id); // eslint-disable-next-line handle-callback-err
-            });
-    } catch (err) {
-        console.log(err);
-    }
-});
 
-router.delete('/remove', async(req, res) => {
+router.get('/currentUserAuth', (req, res) => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        res.send({ user: user });
+    } else {
+        res.send('notLoggedIn');
+    }
+})
+
+router.get('/currentUser', async(req, res) => {
+    let data = [];
+    try {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            await db
+                .collection('users')
+                .get()
+                .then(snapshot => {
+                    snapshot.docs.forEach(doc => {
+                        data.push(doc.data());
+                    });
+                });
+            data = data.filter(EachUser => EachUser.email == user.email)
+            res.send(data)
+        } else {
+            res.send('notLoggedIn');
+        }
+    } catch (e) {
+        console.log(e)
+        res.send('something went wrong')
+    }
+})
+router.delete('/remove', isLoggedIn, async(req, res) => {
     try {
         var userID = req.query.id;
         await db
