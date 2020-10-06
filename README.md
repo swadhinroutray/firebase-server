@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # Firebase Server
+=======
+# firebase-server
+Firebase Server
+>>>>>>> b9c5b786942706c8ceb10a1a8647b68451b03039
 
 - This is a forum based server that we had worked on using Node.js, firebase and Google's cloud based NoSQL database Cloud Firestore.
 - Clone the repository:
@@ -21,3 +26,29 @@ npm install --prefix functions
 ### Authors
  [Swadhin Routray](https://github.com/swadhinroutray) & [Y Chakradhar Reddy](https://github.com/chakradhar123)
 
+<<<<<<< HEAD
+=======
+npm install -g firebase-tools
+```
+after cloning the repo
+```
+cd firebase-server
+
+cd functions
+npm install
+cd ..
+firebase login
+```
+login using ur google account
+```
+touch serviceAccountKey.json
+```
+go to https://console.firebase.google.com/project/hotweb-43048/settings/serviceaccounts/adminsdk
+and click on generate key.
+once downloaded copy the content to serviceAccountKey.json
+```
+firebase serve
+```
+this should start ur server and client 
+# public is for frontend and functions is for backend
+>>>>>>> b9c5b786942706c8ceb10a1a8647b68451b03039
