@@ -1,3 +1,5 @@
+/* eslint-disable promise/no-nesting */
+/* eslint-disable callback-return */
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable promise/always-return */
@@ -147,7 +149,7 @@ router.get('/currentUser', async(req, res) => {
                         data.push(doc.data());
                     });
                 });
-            data = data.filter(EachUser => EachUser.email == user.email)
+            data = data.filter(EachUser => EachUser.email === user.email)
             res.send(data)
         } else {
             res.send('notLoggedIn');

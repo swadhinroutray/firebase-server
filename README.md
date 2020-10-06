@@ -1,29 +1,23 @@
-# HotWeb
-Hotweb website
+# Firebase Server
 
-clone this repo and make sure u have firebase and node installed
-if you dont have firebase installed
+- This is a forum based server that we had worked on using Node.js, firebase and Google's cloud based NoSQL database Cloud Firestore.
+- Clone the repository:
+``
+git clone https://github.com/chakradhar123/firebase-server.git
+``
+- If you don't have firebase installed run `npm install -g firebase-tools` after cloning the repository.
 ```
+cd firebase-server
+npm install --prefix functions
+```
+- Login using your Google Account withthe command `firebase login`
+- Create a serviceAccountKey.json file using `touch serviceAccountKey.json`
 
-npm install -g firebase-tools
-```
-after cloning the repo
-```
-cd hotweb
-cd functions
-npm install
-cd ..
-firebase login
-```
-login using ur google account
-```
-touch serviceAccountKey.json
-```
-go to https://console.firebase.google.com/project/hotweb-43048/settings/serviceaccounts/adminsdk
-and click on generate key.
-once downloaded copy the content to serviceAccountKey.json
-```
-firebase serve
-```
-this should start ur server and client 
-# public is for frontend and functions is for backend
+
+- Go to `https://console.firebase.google.com/project/${Project-ID}/settings/serviceaccounts/adminsdk` and click on generate key.
+- Once downloaded copy the contents to `serviceAccountKey.json`
+- Run `firebase serve` to start your application
+
+### Authors
+ [Swadhin Routray](https://github.com/swadhinroutray) & [Y Chakradhar Reddy](https://github.com/chakradhar123)
+
