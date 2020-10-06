@@ -1,5 +1,5 @@
-# HotWeb
-Hotweb website
+# firebase-server
+Firebase Server
 
 clone this repo and make sure u have firebase and node installed
 if you dont have firebase installed
@@ -9,7 +9,8 @@ npm install -g firebase-tools
 ```
 after cloning the repo
 ```
-cd hotweb
+cd firebase-server
+
 cd functions
 npm install
 cd ..
